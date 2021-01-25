@@ -1,0 +1,103 @@
+{% extends 'layout.html' %}
+
+{% block styles %}
+<style>
+    .text-red{
+        color: tomato !important;
+    }
+</style>
+{% endblock styles %}
+
+{% block content %}
+<div class="container">
+    <div class="row pt-5">
+        <div class="col-6 offset-3">
+            
+            <form id="formTask" action="{% url 'tasks:task'  %}" autocomplete="off">
+                {% csrf_token %}
+                <div class="row">
+                    <div class="col-12">
+                        <div class="form-group validate">
+                            <label for="owner">Owner</label>
+                            <input type="text" name="owner" class="form-control" id="owner" placeholder="Enter owner name">
+                            <small class="text-red text-muted mySpan"></small>
+                        </div>
+                        <div class="form-group validate">
+                            <label for="name">Task name</label>
+                            <input type="text" name="name" class="form-control" id="name" placeholder="Enter task name">
+                            <small class="text-red text-muted mySpan"></small>
+                        </div>
+                        <div class="form-group validate">
+                            <label for="task_date">Task date</label>
+                            <input type="date" name="task_date" class="form-control" id="task_date">
+                            <small class="text-red text-muted mySpan"></small>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="form-group validate">
+                            <label for="start_time">Start time</label>
+                            <input type="time" name="start_time" class="form-control" id="start_time">
+                            <small class="text-red text-muted mySpan"></small>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="form-group validate">
+                            <label for="end_time">End time</label>
+                            <input type="time" name="end_time" class="form-control" id="end_time">
+                            <small class="text-red text-muted mySpan"></small>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <button type="submit" class="btn btn-primary pl-5 pr-5 btnSave">Save</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock content %}
+
+{% block scripts %}
+<script>
+    $("#formTask").on("submit", function(e){
+        e.preventDefault();
+        e.stopPropagation();
+        var $this = $(this);
+        var valid = true;
+        $('#formTask input').each(function() {
+            let $this = $(this);
+            
+            if(!$this.val()) {
+                valid = false;
+                $this.parents('.validate').find('.mySpan').text('The '+$this.attr('name').replace(/[\_]+/g, ' ')+' field is required');
+            }
+        });
+    
+        if(valid){
+            $(".btnSave").text('Saving....').attr('disabled',true);
+            let data = $this.serialize();
+            $.ajax({
+                url: $this.attr("action"),
+                type: "POST",
+                data: data,
+                dataType: "json",
+                success: function(resp){
+                    if(resp.message == "success"){
+                        alert("Saved successful");
+                        $("#formTask")[0].reset();
+                    }
+                    else{
+                        alert(resp.message);
+                    }
+                    $(".btnSave").text('Save').attr('disabled',false);
+                },
+                error: function(resp){
+                    console.log("Something went wrong");
+                    $(".btnSave").text('Save').attr('disabled',false);
+                }
+            });
+        }
+        return false;
+    });
+</script>
+{% endblock scripts %}
