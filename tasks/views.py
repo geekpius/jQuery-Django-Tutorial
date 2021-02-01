@@ -25,3 +25,11 @@ class ViewTaskView(View):
     def get(self,request, *args, **kwargs):
         tasks = Task.objects.all()
         return render(request, "view.html", {"tasks":tasks})
+
+class TaskUpdateDeleteView(View):
+    def get(self, request, pk, *args, **kwargs):
+        if request.is_ajax():
+            task = Task.objects.get(pk=pk)
+            task.delete()
+            return JsonResponse({"message":"success"})
+        return JsonResponse({"message": "Wrong route"})
