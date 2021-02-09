@@ -27,18 +27,14 @@ class ViewTaskView(View):
         return render(request, "view.html", {"tasks":tasks})
 
 class TaskUpdateDeleteView(View):
-<<<<<<< HEAD
     form_class = TaskForm
 
-=======
->>>>>>> d865bbaeb6159cd822363bc33d29cccd2211f3bc
     def get(self, request, pk, *args, **kwargs):
         if request.is_ajax():
             task = Task.objects.get(pk=pk)
             task.delete()
             return JsonResponse({"message":"success"})
         return JsonResponse({"message": "Wrong route"})
-<<<<<<< HEAD
 
     def post(self, request, pk, *args, **kwargs):
         if request.is_ajax():
@@ -72,5 +68,3 @@ class TaskUpdateDeleteView(View):
             return JsonResponse({'message': 'Validation failed'})
 
         return JsonResponse({'message': 'Wrong request'})
-=======
->>>>>>> d865bbaeb6159cd822363bc33d29cccd2211f3bc
