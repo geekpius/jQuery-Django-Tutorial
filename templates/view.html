@@ -32,10 +32,7 @@
                         <td>{{ task.start_time }}</td>
                         <td>{{ task.end_time }}</td>
                         <td>
-<<<<<<< HEAD
                             <a href="{% url 'tasks:update_delete' task.id %}" data-date="{{ task.task_date|date:"Y-m-d" }}" data-start="{{ task.start_time|date:"H:i" }}" data-end="{{ task.end_time|date:"H:i" }}" class="link-edit mr-2 text-primary">Edit</a>
-=======
->>>>>>> d865bbaeb6159cd822363bc33d29cccd2211f3bc
                             <a href="{% url 'tasks:update_delete' task.id %}" class="link-delete text-danger">Delete</a>
                         </td>
                     </tr>
@@ -46,7 +43,6 @@
     </div>
 </div>
 
-<<<<<<< HEAD
 
 
 <div class="modal fade" id="editModal" tabindex="-1" arial-labelledby="editModalLabel" aria-hidden="true">
@@ -92,13 +88,10 @@
 </div>
 
 
-=======
->>>>>>> d865bbaeb6159cd822363bc33d29cccd2211f3bc
 {% endblock content %}
 
 {% block scripts %}
 <script>
-<<<<<<< HEAD
     $("#table tbody").on("click", ".link-edit", function(e){
         e.preventDefault();
         var $this = $(this);
@@ -154,8 +147,6 @@
         return false;
     });
 
-=======
->>>>>>> d865bbaeb6159cd822363bc33d29cccd2211f3bc
     $("#table tbody").on("click", ".link-delete", function(e){
         e.preventDefault();
         var $this = $(this);
