@@ -1,0 +1,176 @@
+{% extends 'layout.html' %}
+
+{% block styles %}
+<style>
+    .text-red{
+        color: tomato !important;
+    }
+</style>
+{% endblock styles %}
+
+{% block content %}
+<div class="container">
+    <div class="row pt-5">
+        <div class="col-12">
+            <table class="table" id="table">
+                <thead>
+                  <tr>
+                    <th scope="col">Owner</th>
+                    <th scope="col">Task</th>
+                    <th scope="col">Date</th>
+                    <th scope="col">Start</th>
+                    <th scope="col">End</th>
+                    <th scope="col">Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                    {% for task in tasks %}
+                    <tr class="record">
+                        <td>{{ task.owner }}</td>
+                        <td>{{ task.name }}</td>
+                        <td>{{ task.task_date }}</td>
+                        <td>{{ task.start_time }}</td>
+                        <td>{{ task.end_time }}</td>
+                        <td>
+                            <a href="{% url 'tasks:update_delete' task.id %}" data-date="{{ task.task_date|date:"Y-m-d" }}" data-start="{{ task.start_time|date:"H:i" }}" data-end="{{ task.end_time|date:"H:i" }}" class="link-edit mr-2 text-primary">Edit</a>
+                            <a href="{% url 'tasks:update_delete' task.id %}" class="link-delete text-danger">Delete</a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+              </table>
+        </div>
+    </div>
+</div>
+
+
+
+<div class="modal fade" id="editModal" tabindex="-1" arial-labelledby="editModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Edit</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <form id="formEdit" action="">
+                {% csrf_token %}
+                <div class="modal-body">
+                    <div class="form-group validate">
+                        <input type="text" name="owner" class="form-control" placeholder="Enter owner name">
+                        <small class="text-red text-muted mySpan"></small>
+                    </div>
+                    <div class="form-group validate">
+                        <input type="text" name="name" class="form-control" placeholder="Enter task name">
+                        <small class="text-red text-muted mySpan"></small>
+                    </div>
+                    <div class="form-group validate">
+                        <input type="date" name="task_date" class="form-control">
+                        <small class="text-red text-muted mySpan"></small>
+                    </div>
+                    <div class="form-group validate">
+                        <input type="time" name="start_time" class="form-control">
+                        <small class="text-red text-muted mySpan"></small>
+                    </div>
+                    <div class="form-group validate">
+                        <input type="time" name="end_time" class="form-control">
+                        <small class="text-red text-muted mySpan"></small>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary btnUpdate">Update</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+
+{% endblock content %}
+
+{% block scripts %}
+<script>
+    $("#table tbody").on("click", ".link-edit", function(e){
+        e.preventDefault();
+        var $this = $(this);
+        let owner = $this.parents(".record").find('td').eq(0).text();
+        let task = $this.parents(".record").find('td').eq(1).text();
+        let taskDate = $this.data('date');
+        let startTime = $this.data('start');
+        let endTime = $this.data('end');
+        $("#formEdit input[name='owner']").val(owner);
+        $("#formEdit input[name='name']").val(task);
+        $("#formEdit input[name='task_date']").val(taskDate);
+        $("#formEdit input[name='start_time']").val(startTime);
+        $("#formEdit input[name='end_time']").val(endTime);
+        $("#formEdit").attr("action", $this.attr('href'));
+        $("#editModal").modal("show");
+        return false;
+    });
+
+    $("#formEdit").on("submit", function(e){
+        e.preventDefault();
+        e.stopPropagation();
+        var $this = $(this);
+        var valid = true;
+        $('#formEdit input').each(function() {
+            let $this = $(this);
+            
+            if(!$this.val()) {
+                valid = false;
+                $this.parents('.validate').find('.mySpan').text('The '+$this.attr('name').replace(/[\_]+/g, ' ')+' field is required');
+            }
+        });
+    
+        if(valid){
+            let data = $this.serialize();
+            $.ajax({
+                url: $this.attr("action"),
+                type: "POST",
+                data: data,
+                dataType: "json",
+                success: function(resp){
+                    if(resp.message === "success"){
+                        alert("Updated successful");
+                        $("#editModal").modal('hide');
+                    }else{
+                        alert(resp.message);
+                    }
+                },
+                error: function(resp){
+                    console.log("Something went wrong");
+                }
+            });
+        }
+        return false;
+    });
+
+    $("#table tbody").on("click", ".link-delete", function(e){
+        e.preventDefault();
+        var $this = $(this);
+        if(confirm("Sure to delete?")){
+            $.ajax({
+                url: $this.attr("href"),
+                type: "GET",
+                dataType: "json",
+                success: function(resp){
+                    if(resp.message === 'success'){
+                        $this.parents('.record').fadeOut("slow", function(){
+                            $this.parents('.record').remove();
+                        });
+                    }
+                    else{
+                        alert(resp.message);
+                    }
+                },
+                error: function(resp){
+                    console.log("Something went wrong");
+                }
+            });
+        }
+        return false;
+    });
+</script>
+{% endblock scripts %}
