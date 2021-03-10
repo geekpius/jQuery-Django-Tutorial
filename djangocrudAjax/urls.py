@@ -22,6 +22,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
 
     path("tasks/",include('tasks.urls')),
+    path("comments/",include('comments.urls')),
 ]
 
 if settings.DEBUG:

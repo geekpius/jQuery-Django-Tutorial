@@ -1,0 +1,35 @@
+{% extends 'layout.html' %}
+
+{% block styles %}
+{% endblock styles %}
+
+{% block content %}
+<div class="container">
+    <div class="row pt-5">
+        <div class="col-12 text-center">
+            <button class="btn btn-primary btn-get-data">Get HTML file in a div</button>
+            <div class="content-data mt-4" data-url="{% url 'tasks:tutorial_data' %}">File content will display here</div>
+        </div>
+    </div>
+</div>
+
+
+
+{% endblock content %}
+
+{% block scripts %}
+<script>
+    $(".btn-get-data").on("click", function(){
+        $.ajax({
+            url: $(".content-data").data('url'),
+            type: "GET",
+            success: function(resp){
+                $(".content-data").html(resp);
+            },
+            error: function(resp){
+                console.log("something went wrong");
+            }
+        });
+    });
+</script>
+{% endblock scripts %}

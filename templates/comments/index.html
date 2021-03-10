@@ -1,0 +1,98 @@
+{% extends 'layout.html' %}
+
+{% block styles %}
+<style>
+    .text-red{
+        color: tomato !important;
+    }
+</style>
+{% endblock styles %}
+
+{% block content %}
+<div class="container">
+    <div class="row pt-5">
+        <div class="col-6 offset-3">
+            
+            <form id="formComment" action="{% url 'comments:comment'  %}" autocomplete="off">
+                {% csrf_token %}
+                <div class="row">
+                    <div class="col-12">
+                        <div class="form-group validate">
+                            <label for="comment">Comment</label>
+                            <textarea rows="5" name="comment" class="form-control" placeholder="Enter your comment"></textarea>
+                            <small class="text-red text-muted mySpan"></small>
+                        </div>
+                    <div class="col-6">
+                        <button type="submit" class="btn btn-primary pl-5 pr-5 btnSave">Save</button>
+                    </div>
+                </div>
+            </form>
+
+            <div class="comment-content mt-5" data-url="{% url 'comments:comment_data' %}">
+
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock content %}
+
+{% block scripts %}
+<script>
+
+    function getComments(){
+        $.ajax({
+            url: $(".comment-content").data('url'),
+            type: "GET",
+            success: function(resp){
+                $(".comment-content").html(resp);
+            },
+            error: function(resp){
+                console.log("something went wrong");
+            }
+        });
+    }
+    getComments();
+
+    $("#formComment").on("submit", function(e){
+        e.preventDefault();
+        e.stopPropagation();
+        var $this = $(this);
+        var valid = true;
+        $('#formComment textarea').each(function() {
+            let $this = $(this);
+            
+            if(!$this.val()) {
+                valid = false;
+                $this.parents('.validate').find('.mySpan').text('The '+$this.attr('name').replace(/[\_]+/g, ' ')+' field is required');
+            }
+        });
+    
+        if(valid){
+            $(".btnSave").text('Saving....').attr('disabled',true);
+            let data = $this.serialize();
+            //ajax
+            $.ajax({
+                url: $this.attr('action'),
+                type: "POST",
+                data: data,
+                dataType: 'json',
+                success: function(resp){
+                    if(resp.message === 'success'){
+                        getComments();
+                    }else{
+                        alert(resp.message);
+                    }
+
+                    $(".btnSave").text('Save').attr('disabled',false);
+                },
+                error: function(resp){
+                    console.log('something went wrong');
+                    $(".btnSave").text('Save').attr('disabled',false);
+                }
+            });
+        }
+        return false;
+    });
+
+</script>
+{% endblock scripts %}
