@@ -95,7 +95,3 @@ class TutorialDataView(View):
             }
             return HttpResponse(template.render(context, self.request))
         return HttpResponse("Wrong request")
-
-
-
-    
