@@ -1,0 +1,75 @@
+{% extends 'layout.html' %}
+
+{% block styles %}
+<style>
+    .text-red{
+        color: tomato !important;
+    }
+</style>
+{% endblock styles %}
+
+{% block content %}
+<div class="container">
+    <div class="row pt-5">
+        <div class="col-6 offset-3">
+            <ul class="nav nav-tabs" id="myTab" role="tablist">
+                {% for product in product_list %}
+                
+                <li class="nav-item" role="presentation">
+                    <a class="nav-link {% if forloop.counter == 1 %} active {% endif %} category-link" id="{{product.category}}-tab" data-url="{% url 'products:products_category' product.category  %}" data-toggle="tab" href="#{{product.category}}" role="tab" aria-controls="home" aria-selected="true">{{product.category|upper}}</a>
+                  </li>
+                {% endfor %}
+                
+                <!-- <li class="nav-item" role="presentation">
+                  <a class="nav-link" id="profile-tab" data-toggle="tab" href="#profile" role="tab" aria-controls="profile" aria-selected="false">Category</a>
+                </li>
+                <li class="nav-item" role="presentation">
+                  <a class="nav-link" id="contact-tab" data-toggle="tab" href="#contact" role="tab" aria-controls="contact" aria-selected="false">Category</a>
+                </li> -->
+            </ul>
+            <div class="tab-content" id="myTabContent">
+                <div class="mt-4 imageContent">
+
+                </div>
+            </div>
+            
+        </div>
+    </div>
+</div>
+{% endblock content %}
+
+{% block scripts %}
+<script>
+    function getFirstCategoryImages()
+    {
+        let url  = $(".category-link:first").data('url');
+        $.ajax({
+            url: url,
+            type: "GET",
+            success: function(resp){
+                $(".imageContent").html(resp);
+            },
+            error: function(resp){
+                console.log("something went wrong");
+            }
+        });
+    }
+
+    getFirstCategoryImages();
+
+    $(".category-link").on("click", function(){
+        var $this = $(this);
+        $.ajax({
+            url: $this.data('url'),
+            type: "GET",
+            success: function(resp){
+                $(".imageContent").html(resp);
+            },
+            error: function(resp){
+                console.log("something went wrong");
+            }
+        });
+        return false;
+    });
+</script>
+{% endblock scripts %}

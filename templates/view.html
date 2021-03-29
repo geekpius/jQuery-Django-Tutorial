@@ -1,0 +1,73 @@
+{% extends 'layout.html' %}
+
+{% block styles %}
+<style>
+    .text-red{
+        color: tomato !important;
+    }
+</style>
+{% endblock styles %}
+
+{% block content %}
+<div class="container">
+    <div class="row pt-5">
+        <div class="col-12">
+            <table class="table" id="table">
+                <thead>
+                  <tr>
+                    <th scope="col">Owner</th>
+                    <th scope="col">Task</th>
+                    <th scope="col">Date</th>
+                    <th scope="col">Start</th>
+                    <th scope="col">End</th>
+                    <th scope="col">Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                    {% for task in tasks %}
+                    <tr class="record">
+                        <td>{{ task.owner }}</td>
+                        <td>{{ task.name }}</td>
+                        <td>{{ task.task_date }}</td>
+                        <td>{{ task.start_time }}</td>
+                        <td>{{ task.end_time }}</td>
+                        <td>
+                            <a href="{% url 'tasks:delete' task.id  %}" class="link-delete text-danger">Delete</a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+              </table>
+        </div>
+    </div>
+</div>
+
+{% endblock content %}
+
+{% block scripts %}
+
+<script>
+$(".link-delete").on("click", function(e){
+    e.preventDefault();
+    var $this = $(this);
+    if(confirm("Sure to delete?")){
+        $.ajax({
+            url: $this.attr("href"),
+            type: "GET",
+            dataType: "json",
+            success: function(resp){
+                if(resp.message == "success"){
+                    $this.parents(".record").fadeOut("slow", function(){
+                        $this.parents(".record").remove();
+                    });
+                }else{
+                    alert(resp.message);
+                }
+            }
+        });
+    }
+    return false;
+});
+</script>
+
+{% endblock scripts %}

@@ -1,0 +1,7 @@
+<div class="row">
+    {% for product in product_image_list %}
+    <div class="col-sm-4">
+        <img src="{{product.image.url}}" alt="image" width="200" height="200" class="img-responsive">
+    </div>
+    {% endfor %}
+</div>
