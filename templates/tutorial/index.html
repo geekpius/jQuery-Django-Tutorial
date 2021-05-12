@@ -1,0 +1,73 @@
+{% extends 'layout.html' %}
+
+{% block styles %}
+<style>
+    .text-red{
+        color: tomato !important;
+    }
+</style>
+{% endblock styles %}
+
+{% block content %}
+<div class="container">
+    <div class="row pt-5">
+        <div class="col-6 offset-3">
+            
+            <form id="formAdd" action="{% url 'tasks:task'  %}" autocomplete="off">
+                {% csrf_token %}
+                <div class="row">
+                    <div class="col-12">
+                        <div class="form-group validate">
+                            <label for="">Category</label>
+                            <select name="category" class="form-control">
+                                <option value="">--Select--</option>
+                                {% for product in product_list %}
+                                <option value="{{ product.category }}">{{ product.category }}</option>
+                                {% endfor %}
+                            </select>
+                            <small class="text-red text-muted mySpan"></small>
+                        </div>
+                        <div class="form-group validate">
+                            <label for="">Product</label>
+                            <select name="product" class="form-control">
+                                <option class="after" value="">--Select--</option>
+                            </select>
+                            <small class="text-red text-muted mySpan"></small>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <button type="submit" class="btn btn-primary pl-5 pr-5 btnSave">Save</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock content %}
+
+{% block scripts %}
+<script>
+   $("#formAdd select[name='category']").on('change', function(){
+    var $this = $(this);
+    if($this.val() !=''){
+        $("#formAdd select[name='product']").find('.after').nextAll().remove();
+        $.ajax({
+            url: '/tutorial/'+$this.val(),
+            type: 'GET',
+            success: function(resp){
+                let options = '';
+                resp.data.forEach(product => {
+                    options+='<option value='+product.name+'>'+product.name +'</option>';
+                });
+                $("#formAdd select[name='product']").find('.after').after(options);
+            }, 
+            error: function(resp){
+                console.log('Something went wrong');
+            }
+        });
+    }else{
+        $("#formAdd select[name='product']").find('.after').nextAll().remove();
+    }
+   });
+</script>
+{% endblock scripts %}

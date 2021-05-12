@@ -23,6 +23,7 @@ urlpatterns = [
 
     path("tasks/",include('tasks.urls')),
     path("products/",include('products.urls')),
+    path("tutorial/",include('tutorial.urls')),
 ]
 
 if settings.DEBUG:
